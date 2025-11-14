@@ -1,0 +1,22 @@
+{
+  "extends": ["next/core-web-vitals", "prettier"],
+  "plugins": ["@typescript-eslint"],
+  "rules": {
+    "prefer-const": "error",
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": "error",
+    "no-console": "warn",
+    "react-hooks/exhaustive-deps": "warn",
+    "@next/next/no-img-element": "error",
+    "jsx-a11y/alt-text": "error",
+    "react/prop-types": "off"
+  },
+  "overrides": [
+    {
+      "files": ["**/*.test.{ts,tsx}", "**/__tests__/**/*.{ts,tsx}"],
+      "env": {
+        "jest": true
+      }
+    }
+  ]
+}
