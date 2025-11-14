@@ -176,4 +176,3 @@ See `.env.local.example` for complete list of required environment variables.
 - Development: Detailed logging, debug information
 - Production: Optimized logging, error reporting only
 - Use `NODE_ENV` to control behavior
-  goof
