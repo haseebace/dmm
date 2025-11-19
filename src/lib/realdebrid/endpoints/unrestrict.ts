@@ -42,7 +42,7 @@ export class UnrestrictEndpoint {
   ): Promise<UnrestrictLink | null> {
     try {
       return await this.unlockLink(link, options)
-    } catch (error) {
+    } catch {
       return null
     }
   }
@@ -55,7 +55,7 @@ export class UnrestrictEndpoint {
     try {
       const info = await this.checkLink(link)
       return info?.filesize || null
-    } catch (error) {
+    } catch {
       return null
     }
   }
@@ -68,7 +68,7 @@ export class UnrestrictEndpoint {
     try {
       const info = await this.checkLink(link)
       return info !== null
-    } catch (error) {
+    } catch {
       return false
     }
   }

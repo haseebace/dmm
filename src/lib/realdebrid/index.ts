@@ -11,14 +11,7 @@ import { HostsEndpoint } from './endpoints/hosts'
 import { UnrestrictEndpoint } from './endpoints/unrestrict'
 import { TorrentsEndpoint } from './endpoints/torrents'
 import { StreamingEndpoint } from './endpoints/streaming'
-import {
-  RealDebridClientOptions,
-  User,
-  Host,
-  UnrestrictLink,
-  Torrent,
-  StreamingLink,
-} from '@/types/realdebrid'
+import { RealDebridClientOptions } from '@/types/realdebrid'
 
 export class RealDebridApi {
   private client: RealDebridClient
@@ -46,11 +39,10 @@ export class RealDebridApi {
     try {
       await this.user.getUserInfo()
       return true
-    } catch (error) {
+    } catch {
       return false
     }
   }
-
   /**
    * Get comprehensive API status
    */

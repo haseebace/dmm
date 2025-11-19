@@ -26,7 +26,7 @@ export class HostsEndpoint {
     try {
       const hosts = await this.getHosts()
       return hosts.find((host) => host.id === hostId) || null
-    } catch (error) {
+    } catch {
       return null
     }
   }
@@ -62,7 +62,7 @@ export class HostsEndpoint {
     try {
       const hosts = await this.getHostsByExtension(extension)
       return hosts.length > 0
-    } catch (error) {
+    } catch {
       return false
     }
   }

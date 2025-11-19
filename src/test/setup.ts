@@ -4,6 +4,17 @@ import { vi } from 'vitest'
 // Mock environment validation
 vi.mock('@/lib/env-validation', () => ({
   validateEnv: vi.fn(),
+  env: {
+    NEXT_PUBLIC_SUPABASE_URL: 'https://test.supabase.co',
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: 'test-anon-key',
+    NEXT_PUBLIC_APP_URL: 'http://localhost:3000',
+    SUPABASE_SERVICE_ROLE_KEY: 'test-service-role-key',
+    REAL_DEBRID_CLIENT_ID: 'test-client-id',
+    REAL_DEBRID_CLIENT_SECRET: 'test-client-secret',
+    REAL_DEBRID_REDIRECT_URI: 'http://localhost:3000/api/auth/callback',
+    NEXTAUTH_URL: 'http://localhost:3000',
+    NEXTAUTH_SECRET: 'test-nextauth-secret',
+  },
 }))
 
 // Mock environment variables

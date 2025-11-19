@@ -164,13 +164,16 @@ export async function POST(request: NextRequest) {
     if (error) {
       throw new OAuth2Error(
         errorDescription || `OAuth2 authorization failed: ${error}`,
-        400
+        error
       )
     }
 
     // Validate required parameters
     if (!code || !state) {
-      throw new OAuth2Error('Missing required OAuth2 parameters', 400)
+      throw new OAuth2Error(
+        'Missing required OAuth2 parameters',
+        'MISSING_PARAMS'
+      )
     }
 
     // Get stored state and code verifier from cookies
@@ -179,11 +182,14 @@ export async function POST(request: NextRequest) {
 
     // Validate state to prevent CSRF
     if (!storedState || storedState !== state) {
-      throw new OAuth2Error('Invalid OAuth2 state', 400)
+      throw new OAuth2Error('Invalid OAuth2 state', 'INVALID_STATE')
     }
 
     if (!codeVerifier) {
-      throw new OAuth2Error('Missing PKCE code verifier', 400)
+      throw new OAuth2Error(
+        'Missing PKCE code verifier',
+        'MISSING_CODE_VERIFIER'
+      )
     }
 
     // Exchange authorization code for tokens

@@ -10,7 +10,7 @@ export class AppError extends Error {
 }
 
 export class ValidationError extends AppError {
-  constructor(message: string, _field?: string) {
+  constructor(message: string) {
     super(message, 400, 'VALIDATION_ERROR')
     this.name = 'ValidationError'
   }
@@ -54,6 +54,16 @@ export class ExternalServiceError extends AppError {
   ) {
     super(message, 502, 'EXTERNAL_SERVICE_ERROR')
     this.name = 'ExternalServiceError'
+  }
+}
+
+export class OAuth2Error extends AppError {
+  constructor(
+    message: string,
+    public code?: string
+  ) {
+    super(message, 400, 'OAUTH2_ERROR')
+    this.name = 'OAuth2Error'
   }
 }
 

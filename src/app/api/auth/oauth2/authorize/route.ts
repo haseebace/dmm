@@ -19,12 +19,11 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const token = authHeader.substring(7)
     // In a real implementation, you'd validate this token with Supabase
     // For now, we'll proceed with the flow
 
     // Generate OAuth2 state
-    const state = oauth2Client.generateState()
+    const state = await oauth2Client.generateState()
 
     // Store state in session/cookie for validation during callback
     const response = NextResponse.json({
@@ -92,7 +91,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate OAuth2 state
-    const state = oauth2Client.generateState()
+    const state = await oauth2Client.generateState()
 
     // Create authorization URL
     const authorizationUrl = oauth2Client.createAuthorizationUrl(state)

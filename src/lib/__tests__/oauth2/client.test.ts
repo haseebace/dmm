@@ -39,8 +39,8 @@ describe('OAuth2Client', () => {
   })
 
   describe('generateState', () => {
-    it('should generate OAuth2 state with required properties', () => {
-      const state = oauth2Client.generateState()
+    it('should generate OAuth2 state with required properties', async () => {
+      const state = await oauth2Client.generateState()
 
       expect(state).toHaveProperty('state')
       expect(state).toHaveProperty('codeVerifier')
@@ -57,9 +57,9 @@ describe('OAuth2Client', () => {
       expect(state.codeChallenge.length).toBeGreaterThan(0)
     })
 
-    it('should generate unique states', () => {
-      const state1 = oauth2Client.generateState()
-      const state2 = oauth2Client.generateState()
+    it('should generate unique states', async () => {
+      const state1 = await oauth2Client.generateState()
+      const state2 = await oauth2Client.generateState()
 
       expect(state1.state).not.toBe(state2.state)
       expect(state1.codeVerifier).not.toBe(state2.codeVerifier)
@@ -68,8 +68,8 @@ describe('OAuth2Client', () => {
   })
 
   describe('createAuthorizationUrl', () => {
-    it('should create authorization URL with correct parameters', () => {
-      const state = oauth2Client.generateState()
+    it('should create authorization URL with correct parameters', async () => {
+      const state = await oauth2Client.generateState()
       const authUrl = oauth2Client.createAuthorizationUrl(state)
 
       expect(authUrl).toContain('https://api.real-debrid.com/oauth/v2/auth')
@@ -84,12 +84,58 @@ describe('OAuth2Client', () => {
       expect(authUrl).toContain('code_challenge_method=S256')
     })
 
-    it('should use the provided state', () => {
-      const customState = oauth2Client.generateState()
+    it('should use the provided state', async () => {
+      const customState = await oauth2Client.generateState()
       const authUrl = oauth2Client.createAuthorizationUrl(customState)
 
       expect(authUrl).toContain(`state=${customState.state}`)
       expect(authUrl).toContain(`code_challenge=${customState.codeChallenge}`)
+    })
+
+    it('should generate PKCE code challenge following RFC 7636 S256 method', async () => {
+      const verifier = 'dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk'
+      const client = new OAuth2Client()
+
+      // Access private method for testing
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const generateChallenge = (client as any).generateCodeChallenge.bind(
+        client
+      )
+      const codeChallenge = await generateChallenge(verifier)
+
+      // Expected code challenge for this verifier using SHA-256 + base64url
+      const expectedChallenge = 'E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM'
+
+      expect(codeChallenge).toBe(expectedChallenge)
+      expect(codeChallenge.length).toBeGreaterThan(0)
+      expect(codeChallenge).toMatch(/^[A-Za-z0-9_-]+$/) // Base64URL characters only
+    })
+
+    it('should generate different code challenges for different verifiers', async () => {
+      const client = new OAuth2Client()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const generateChallenge = (client as any).generateCodeChallenge.bind(
+        client
+      )
+
+      const verifier1 = 'test_verifier_123'
+      const verifier2 = 'test_verifier_456'
+
+      const challenge1 = await generateChallenge(verifier1)
+      const challenge2 = await generateChallenge(verifier2)
+
+      expect(challenge1).not.toBe(challenge2)
+    })
+
+    it('should validate base64url encoding of code challenges', async () => {
+      const state = await oauth2Client.generateState()
+
+      // Validate code challenge follows base64url encoding (no +, /, or = characters)
+      expect(state.codeChallenge).not.toMatch(/[+\/=]/)
+      expect(state.codeChallenge).toMatch(/^[A-Za-z0-9_-]+$/)
+
+      // Validate code verifier follows allowed characters
+      expect(state.codeVerifier).toMatch(/^[A-Za-z0-9\-._~]+$/)
     })
   })
 
@@ -108,7 +154,7 @@ describe('OAuth2Client', () => {
         json: async () => mockResponse,
       } as Response)
 
-      const state = oauth2Client.generateState()
+      const state = await oauth2Client.generateState()
       const tokens = await oauth2Client.exchangeCodeForTokens(
         'test-auth-code',
         state
@@ -152,7 +198,7 @@ describe('OAuth2Client', () => {
         text: async () => 'Invalid authorization code',
       } as Response)
 
-      const state = oauth2Client.generateState()
+      const state = await oauth2Client.generateState()
 
       await expect(
         oauth2Client.exchangeCodeForTokens('invalid-code', state)

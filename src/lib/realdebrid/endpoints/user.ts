@@ -29,7 +29,7 @@ export class UserEndpoint {
           user.expiration &&
           new Date(user.expiration) > new Date()
       )
-    } catch (error) {
+    } catch {
       return false
     }
   }
@@ -41,7 +41,7 @@ export class UserEndpoint {
     try {
       const user = await this.getUserInfo()
       return user.expiration ? new Date(user.expiration) : null
-    } catch (error) {
+    } catch {
       return null
     }
   }
@@ -67,7 +67,7 @@ export class UserEndpoint {
             )
           : 0,
       }
-    } catch (error) {
+    } catch {
       return null
     }
   }

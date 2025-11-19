@@ -18,7 +18,7 @@ vi.mock('@/lib/logger', () => ({
 }))
 
 describe('/api/auth/oauth2/authorize', () => {
-  let mockRequest: Partial<NextRequest>
+  let mockRequest: any
   let mockOAuth2Client: {
     generateState: ReturnType<typeof vi.fn>
     createAuthorizationUrl: ReturnType<typeof vi.fn>
@@ -50,7 +50,12 @@ describe('/api/auth/oauth2/authorize', () => {
       headers: {
         get: vi.fn(),
       },
-    } as Partial<NextRequest>
+      json: vi.fn(),
+      cookies: {
+        get: vi.fn(),
+        set: vi.fn(),
+      },
+    }
   })
 
   afterEach(() => {
@@ -61,7 +66,7 @@ describe('/api/auth/oauth2/authorize', () => {
     it('should return authorization URL when authenticated', async () => {
       mockRequest.headers.get.mockReturnValue('Bearer valid-token')
 
-      const response = await GET(mockRequest)
+      const response = await GET(mockRequest as NextRequest)
       const data = await response.json()
 
       expect(response.status).toBe(200)
@@ -78,7 +83,7 @@ describe('/api/auth/oauth2/authorize', () => {
     it('should return 401 when no authorization header', async () => {
       mockRequest.headers.get.mockReturnValue(null)
 
-      const response = await GET(mockRequest)
+      const response = await GET(mockRequest as NextRequest)
       const data = await response.json()
 
       expect(response.status).toBe(401)
@@ -88,7 +93,7 @@ describe('/api/auth/oauth2/authorize', () => {
     it('should return 401 when invalid authorization header format', async () => {
       mockRequest.headers.get.mockReturnValue('InvalidFormat token')
 
-      const response = await GET(mockRequest)
+      const response = await GET(mockRequest as NextRequest)
       const data = await response.json()
 
       expect(response.status).toBe(401)
@@ -97,29 +102,33 @@ describe('/api/auth/oauth2/authorize', () => {
 
     it('should set secure cookies in production', async () => {
       mockRequest.headers.get.mockReturnValue('Bearer valid-token')
+      // @ts-ignore
       process.env.NODE_ENV = 'production'
 
-      const response = await GET(mockRequest)
+      const response = await GET(mockRequest as NextRequest)
       const stateCookie = response.cookies.get('oauth2_state')
       const verifierCookie = response.cookies.get('oauth2_code_verifier')
 
       expect(stateCookie?.secure).toBe(true)
       expect(verifierCookie?.secure).toBe(true)
 
+      // @ts-ignore
       process.env.NODE_ENV = 'test'
     })
 
     it('should set non-secure cookies in development', async () => {
       mockRequest.headers.get.mockReturnValue('Bearer valid-token')
+      // @ts-ignore
       process.env.NODE_ENV = 'development'
 
-      const response = await GET(mockRequest)
+      const response = await GET(mockRequest as NextRequest)
       const stateCookie = response.cookies.get('oauth2_state')
       const verifierCookie = response.cookies.get('oauth2_code_verifier')
 
       expect(stateCookie?.secure).toBe(false)
       expect(verifierCookie?.secure).toBe(false)
 
+      // @ts-ignore
       process.env.NODE_ENV = 'test'
     })
   })
@@ -129,7 +138,7 @@ describe('/api/auth/oauth2/authorize', () => {
       mockRequest.headers.get.mockReturnValue('Bearer valid-token')
       mockRequest.json = vi.fn().mockResolvedValue({})
 
-      const response = await POST(mockRequest)
+      const response = await POST(mockRequest as NextRequest)
       const data = await response.json()
 
       expect(response.status).toBe(200)
@@ -144,7 +153,7 @@ describe('/api/auth/oauth2/authorize', () => {
       mockRequest.headers.get.mockReturnValue('Bearer valid-token')
       mockRequest.json = vi.fn().mockResolvedValue({})
 
-      const response = await POST(mockRequest)
+      const response = await POST(mockRequest as NextRequest)
       const data = await response.json()
 
       expect(response.status).toBe(200)
@@ -158,7 +167,7 @@ describe('/api/auth/oauth2/authorize', () => {
         anotherParam: 'another-value',
       })
 
-      const response = await POST(mockRequest)
+      const response = await POST(mockRequest as NextRequest)
       const data = await response.json()
 
       expect(response.status).toBe(200)
@@ -170,7 +179,7 @@ describe('/api/auth/oauth2/authorize', () => {
       mockRequest.headers.get.mockReturnValue(null)
       mockRequest.json = vi.fn().mockResolvedValue({})
 
-      const response = await POST(mockRequest)
+      const response = await POST(mockRequest as NextRequest)
       const data = await response.json()
 
       expect(response.status).toBe(401)
@@ -185,7 +194,7 @@ describe('/api/auth/oauth2/authorize', () => {
         throw new Error('OAuth2 client error')
       })
 
-      const response = await GET(mockRequest)
+      const response = await GET(mockRequest as NextRequest)
       const data = await response.json()
 
       expect(response.status).toBe(500)
@@ -199,7 +208,7 @@ describe('/api/auth/oauth2/authorize', () => {
         .fn()
         .mockRejectedValue(new Error('JSON parse error'))
 
-      const response = await POST(mockRequest)
+      const response = await POST(mockRequest as NextRequest)
       const data = await response.json()
 
       expect(response.status).toBe(500)
@@ -213,7 +222,7 @@ describe('/api/auth/oauth2/authorize', () => {
         throw new Error('URL generation failed')
       })
 
-      const response = await POST(mockRequest)
+      const response = await POST(mockRequest as NextRequest)
       const data = await response.json()
 
       expect(response.status).toBe(500)
@@ -225,7 +234,7 @@ describe('/api/auth/oauth2/authorize', () => {
     it('should set cookies with correct attributes', async () => {
       mockRequest.headers.get.mockReturnValue('Bearer valid-token')
 
-      const response = await GET(mockRequest)
+      const response = await GET(mockRequest as NextRequest)
       const stateCookie = response.cookies.get('oauth2_state')
       const verifierCookie = response.cookies.get('oauth2_code_verifier')
 
@@ -249,7 +258,7 @@ describe('/api/auth/oauth2/authorize', () => {
     it('should log authorization request', async () => {
       mockRequest.headers.get.mockReturnValue('Bearer valid-token')
 
-      await GET(mockRequest)
+      await GET(mockRequest as NextRequest)
 
       // Logger should be called for request received
       expect(mockOAuth2Client.generateState).toHaveBeenCalled()
@@ -258,7 +267,7 @@ describe('/api/auth/oauth2/authorize', () => {
     it('should log successful authorization', async () => {
       mockRequest.headers.get.mockReturnValue('Bearer valid-token')
 
-      await GET(mockRequest)
+      await GET(mockRequest as NextRequest)
 
       // Should log successful state generation
       expect(mockOAuth2Client.createAuthorizationUrl).toHaveBeenCalled()

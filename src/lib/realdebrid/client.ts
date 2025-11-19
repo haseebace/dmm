@@ -311,7 +311,7 @@ export class RealDebridClient {
         // Don't retry on authentication errors or abort errors
         if (
           error instanceof RealDebridAuthError ||
-          error.name === 'AbortError'
+          (error instanceof Error && error.name === 'AbortError')
         ) {
           throw error
         }

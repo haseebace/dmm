@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { OAuth2AuthState, OAuth2UserInfo, OAuth2Error } from '@/types/oauth2'
+import { OAuth2AuthState } from '@/types/oauth2'
 import { oauth2TokenStorage } from '@/lib/oauth2/token-storage'
 import { oauth2Client } from '@/lib/oauth2/client'
 import { logger } from '@/lib/logger'

@@ -1,3 +1,18 @@
+#!/bin/sh
+set -e
 
+echo "🚀 Running pre-commit checks..."
 
+# Run lint-staged for files that will be committed
+echo "📝 Running lint-staged..."
 npx lint-staged
+
+# Type check
+echo "🔍 Running TypeScript type check..."
+npm run type-check
+
+# Quick format check (redundant with lint-staged but ensures consistency)
+echo "✨ Checking code formatting..."
+npm run format:check
+
+echo "✅ Pre-commit checks completed successfully!"

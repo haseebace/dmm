@@ -1,21 +1,92 @@
 {
-  "extends": ["next/core-web-vitals", "prettier"],
+  "extends": [
+    "next/core-web-vitals",
+    "prettier",
+    "@typescript-eslint/recommended"
+  ],
   "plugins": ["@typescript-eslint"],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module",
+    "project": "./tsconfig.json"
+  },
   "rules": {
+    // TypeScript specific rules
     "prefer-const": "error",
     "no-unused-vars": "off",
-    "@typescript-eslint/no-unused-vars": "error",
-    "no-console": "warn",
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      { "argsIgnorePattern": "^_" }
+    ],
+    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-non-null-assertion": "warn",
+
+    // Code quality rules
+    "no-console": ["warn", { "allow": ["warn", "error"] }],
+    "no-debugger": "error",
+    "no-alert": "error",
+    "eqeqeq": ["error", "always"],
+    "curly": ["error", "all"],
+
+    // React specific rules
     "react-hooks/exhaustive-deps": "warn",
+    "react/prop-types": "off",
+    "react/jsx-uses-react": "off",
+    "react/react-in-jsx-scope": "off",
     "@next/next/no-img-element": "error",
     "jsx-a11y/alt-text": "error",
-    "react/prop-types": "off"
+    "jsx-a11y/anchor-is-valid": "warn",
+
+    // DMM Project specific rules
+    "prefer-template": "error",
+    "object-shorthand": "error",
+    "destructuring-assignment": ["error", "object"],
+    "no-var": "error",
+    "import/order": [
+      "error",
+      {
+        "groups": [
+          "builtin",
+          "external",
+          "internal",
+          "parent",
+          "sibling",
+          "index"
+        ],
+        "alphabetize": {
+          "order": "asc"
+        }
+      }
+    ]
   },
   "overrides": [
     {
       "files": ["**/*.test.{ts,tsx}", "**/__tests__/**/*.{ts,tsx}"],
       "env": {
-        "jest": true
+        "jest": true,
+        "vitest/globals": true
+      },
+      "extends": ["plugin:vitest/recommended"],
+      "plugins": ["vitest"],
+      "rules": {
+        "@typescript-eslint/no-explicit-any": "off",
+        "prefer-const": "off"
+      }
+    },
+    {
+      "files": ["**/*.stories.tsx"],
+      "rules": {
+        "import/no-default-export": "off",
+        "@typescript-eslint/no-explicit-any": "off"
+      }
+    },
+    {
+      "files": ["next.config.js", "tailwind.config.ts"],
+      "rules": {
+        "@typescript-eslint/no-var-requires": "off"
       }
     }
   ]

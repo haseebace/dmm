@@ -72,19 +72,19 @@ export function AuthButton({
           <div className="flex items-center justify-between">
             <div>
               <p className="font-medium">{user.username}</p>
-              <p className="text-muted-foreground flex items-center gap-1 text-sm">
+              <div className="text-muted-foreground flex items-center gap-1 text-sm">
                 {user.premium ? (
                   <>
                     <Shield className="h-3 w-3 text-yellow-500" />
-                    Premium Account
+                    <span>Premium Account</span>
                   </>
                 ) : (
                   <>
                     <ShieldOff className="h-3 w-3 text-gray-500" />
-                    Free Account
+                    <span>Free Account</span>
                   </>
                 )}
-              </p>
+              </div>
             </div>
             <Button variant="outline" size="sm" onClick={onLogout}>
               Disconnect

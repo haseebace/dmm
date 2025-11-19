@@ -60,10 +60,10 @@ export class OAuth2Client {
   /**
    * Generate OAuth2 state and code challenge for PKCE
    */
-  generateState(): OAuth2State {
+  async generateState(): Promise<OAuth2State> {
     const state = uuidv4()
     const codeVerifier = this.generateCodeVerifier()
-    const codeChallenge = this.generateCodeChallenge(codeVerifier)
+    const codeChallenge = await this.generateCodeChallenge(codeVerifier)
 
     const oauthState: OAuth2State = {
       state,
@@ -76,6 +76,8 @@ export class OAuth2Client {
     logger.info('Generated OAuth2 state', 'oauth2', {
       state: state.substring(0, 8) + '...',
       codeChallengePresent: !!codeChallenge,
+      codeChallengeMethod: 'S256',
+      codeChallengeLength: codeChallenge.length,
     })
 
     return oauthState
@@ -293,24 +295,27 @@ export class OAuth2Client {
   }
 
   /**
-   * Generate code challenge for PKCE
+   * Generate code challenge for PKCE using SHA-256 as required by RFC 7636
    */
-  private generateCodeChallenge(verifier: string): string {
-    // Simple synchronous implementation for testing
-    // In production, you might want to use crypto.subtle but for browser compatibility,
-    // we can use a simple hash function for now
+  private async generateCodeChallenge(verifier: string): Promise<string> {
+    // Use Web Crypto API for proper SHA-256 hashing as required by RFC 7636
     const encoder = new TextEncoder()
     const data = encoder.encode(verifier)
-    let hash = 0
-    for (let i = 0; i < data.length; i++) {
-      const char = data[i]
-      hash = (hash << 5) - hash + char
-      hash = hash & hash // Convert to 32bit integer
-    }
-    return btoa(hash.toString())
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=/g, '')
+
+    // Generate SHA-256 hash using Web Crypto API
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data)
+
+    // Convert to base64url encoding
+    return this.base64UrlEncode(new Uint8Array(hashBuffer))
+  }
+
+  /**
+   * Base64URL encode data according to RFC 4648 Section 5
+   */
+  private base64UrlEncode(data: Uint8Array | Buffer): string {
+    // Convert to base64, then make it URL-safe
+    const base64 = Buffer.from(data).toString('base64')
+    return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '')
   }
 }
 

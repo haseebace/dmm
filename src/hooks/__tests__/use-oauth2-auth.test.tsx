@@ -1,13 +1,13 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { renderHook, act, waitFor } from '@testing-library/react'
-import { useOAuth2Auth } from '@/hooks/use-oauth2-auth'
-import { oauth2TokenStorage } from '@/lib/oauth2/token-storage'
-import { oauth2Client } from '@/lib/oauth2/client'
+import { useOAuth2Auth } from '../use-oauth2-auth'
+import { oauth2TokenStorage } from '../../lib/oauth2/token-storage'
+import { oauth2Client } from '../../lib/oauth2/client'
 
 // Mock the modules
-vi.mock('@/lib/oauth2/token-storage')
-vi.mock('@/lib/oauth2/client')
-vi.mock('@/lib/logger', () => ({
+vi.mock('../../lib/oauth2/token-storage')
+vi.mock('../../lib/oauth2/client')
+vi.mock('../../lib/logger', () => ({
   logger: {
     info: vi.fn(),
     error: vi.fn(),
@@ -43,10 +43,8 @@ describe('useOAuth2Auth', () => {
 
     mockOAuth2Client = {
       refreshAccessToken: vi.fn(),
-    }
-
-    vi.mocked(oauth2TokenStorage).mockImplementation(() => mockTokenStorage)
-    vi.mocked(oauth2Client).mockImplementation(() => mockOAuth2Client)
+    }(oauth2TokenStorage as any).mockImplementation(() => mockTokenStorage)
+    ;(oauth2Client as any).mockImplementation(() => mockOAuth2Client)
   })
 
   afterEach(() => {

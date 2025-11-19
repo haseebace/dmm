@@ -1,3 +1,22 @@
+#!/bin/sh
+set -e
 
+echo "🚀 Running pre-push validation..."
 
-npm run test:run
+# Run tests with coverage
+echo "🧪 Running test suite with coverage..."
+npm run test:coverage
+
+# Build the application to ensure production build works
+echo "🏗️ Running production build..."
+npm run build
+
+# Run comprehensive quality checks
+echo "🔍 Running comprehensive quality check..."
+npm run quality-check
+
+echo "✅ Pre-push validation completed successfully!"
+echo "📊 Build and test results:"
+echo "   - Tests passed with coverage requirements"
+echo "   - Production build successful"
+echo "   - Code quality checks passed"

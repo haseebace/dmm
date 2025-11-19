@@ -65,6 +65,13 @@ export interface Torrent {
   link: string | null
 }
 
+export interface TorrentFile {
+  id: number
+  path: string
+  bytes: number
+  selected: number
+}
+
 export interface TorrentInfo {
   id: string
   filename: string
@@ -83,6 +90,7 @@ export interface TorrentInfo {
   seeders: number
   download_speed: number
   upload_speed: number
+  files?: TorrentFile[]
 }
 
 // Link Unrestricting

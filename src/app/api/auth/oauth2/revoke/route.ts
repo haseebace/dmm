@@ -22,7 +22,6 @@ export async function POST(request: NextRequest) {
 
     // For now, we'll assume the token is valid and proceed
     // In a real implementation, you'd validate the token and get user info
-    const token = authHeader.substring(7)
 
     // Get user tokens from storage
     const user = await oauth2TokenStorage.getUserFromTokens()
